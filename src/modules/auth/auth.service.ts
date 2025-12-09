@@ -47,16 +47,11 @@ export const createUserService = async (body: CreateUserBody) => {
 export async function loginUserService(dto: LoginDto) {
   const { email, password } = dto
 
-  console.log("👉 INICIANDO LOGIN")
-  console.log("📩 Email recebido:", email)
-
   const result = await db
     .select()
     .from(users)
     .where(eq(users.email, email))
     .limit(1)
-
-  console.log("🔎 RESULTADO DO SELECT:", result)
 
   const user = result[0]
 
@@ -65,22 +60,12 @@ export async function loginUserService(dto: LoginDto) {
     throw new Error("INVALID_CREDENTIALS")
   }
 
-  console.log("👤 Usuário encontrado:", {
-    id: user.id,
-    email: user.email,
-    password: user.password, // vamos ver se está hashada!
-  })
-
   const isPasswordValid = await bcrypt.compare(password, user.password)
-
-  console.log("🔐 Senha válida?:", isPasswordValid)
 
   if (!isPasswordValid) {
     console.log("❌ Senha INCORRETA")
     throw new Error("INVALID_CREDENTIALS")
   }
-
-  console.log("✅ LOGIN OK")
 
   return {
     id: user.id,
